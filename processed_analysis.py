@@ -6,6 +6,9 @@
 
 #Python 2.7
 
+#DEPENDENCIES
+#figurefirst,various libraries from https://github.com/timothylwarren/py_utilities
+
 ##USAGE 
 #python processed_analysis.py processed_date_range.txt
 
