@@ -6,6 +6,9 @@
 ###USAGE 
 #python raw_analysis.py raw_date_range.txt
 
+###Dependencies
+#various libraries from https://github.com/timothylwarren/py_utilities
+
 #it saves a .pck file for each experiment with 
 ##summary data for that experiment.
 
@@ -60,10 +63,8 @@ REALIGN_EACH_HALF=False
 OVERWRITE_OFFSET_FLAG=True
 OVERWRITE_OFFSET_VL=5.35-np.pi
 
-ARCHIVE_BOUNDARY=pylab.date2num(datetime.datetime(2014,1,1))
 
 input_path='/users/tim/Dropbox/flystuff/uo_data/'
-CHECK_CALIBRATION_FLAG=0
 CALC_CALIBRATION_FLAG=0
 CALC_SPECTRUM=0
 #to do, apply gaussian filter, reduce step_len to 0.15 s #experiment with different filter len
@@ -99,10 +100,6 @@ class Sun_Anal():
                 self.fly_limiter=input_args[2]
 
 
-
-       
-
-
     def plot_traj_by_vec_strength(self,ax,mn_drxn,vec_strength,**kwargs):
 
         ax.plot(mn_drxn,vec_strength)
@@ -114,13 +111,8 @@ class Sun_Anal():
         cr_mn=mn_drxn
         cr_ln=vec_strength
 
-
-
-
         binvls=[72,20]
         rangevls=[[0,2*np.pi],[0,1]]
-
-
 
         if cr_mn.size:
 
@@ -136,11 +128,7 @@ class Sun_Anal():
 
             heat_map_data=self.save_heat_map_data(heatmap_norm,xedges,yedges,r,theta)
 
-            #plt.polar_heat_map(ax_traj_im,heat_map_data,aligned=0,plot_power_scale=5)
-                    #self.datvls['sumstats']['exp']['heatmap_vls']={}
-
-
-
+            
 
     def run_analysis(self):
 
@@ -185,10 +173,6 @@ class Sun_Anal():
                 try:
                     self.datpath=self.raw_save_file_name
 
-
-
-
-
                     self.crdt=fh.open_pickle(self.datpath)
 
 
@@ -206,11 +190,7 @@ class Sun_Anal():
 
 
             self.make_example_figure()
-            #except:
-            #    print 'no file'
-                #ps.make_plots()
-
-                #self.make_plots_by_file()
+          
 
     def get_data_by_file(self):
         mod_file_name=os.path.join(self.in_data_path,'modified_raw_data.pck')
@@ -220,10 +200,7 @@ class Sun_Anal():
             self.params=fh.open_pickle(pck_fname)
         except:
             print('open pickle error')
-        #self.test_if_variable_gain()
-
-        #self.add_params()
-
+       
         try:
             if not os.path.isfile(mod_file_name):
                 self.tmpdat=(np.array(np.genfromtxt(self.fname)))
@@ -252,46 +229,14 @@ class Sun_Anal():
 
                 self.datvls['params']=self.params
 
-            # elif self.exp_type=='open':
-            #     self.datvls['dat']=self.indt
-            #     self.datvls['params']=self.params
-            #     self.datvls['bndtimes']=self.bndtimes
-            #     self.raw_save_file_name=self.fname.strip('.txt')+'_' + 'rawdata.pck'
-
-            #     fh.save_to_file(self.exec_file,self.raw_save_file_name,self.datvls)
-            #    self.datvls=self.open_sumdt
-
-    def test_if_variable_gain(self):
-        #notion is that variable_gain_experiment should have
-
-        if 'variable_gain_duration' in self.params.keys():
-            if 'variable_closed_loop_duration_sec' in self.params.keys():
-                if self.params['variable_closed_loop_duration_sec']:
-                    if 'pre_params' in self.params.keys():
-                        self.variable_gain_flag=0
-                    else:
-                        self.variable_gain_flag=1
-                else:
-                    self.variable_gain_flag=0
-            else:
-                self.variable_gain_flag=0
-        else:
-            self.variable_gain_flag=0
-
-    def test_if_ersatz_sun(self):
-        if 'ersatz_sun' in self.params.keys():
-            if self.params['ersatz_sun']:
-                self.ersatz_sun_flag=1
-            else:
-                self.ersatz_sun_flag=0
+           
 
     def add_params(self):
 
         self.params['filter_len_in_sec']=FILTER_LEN_IN_SEC
         self.params['step_len_in_sec']=STEP_LEN_IN_SEC
         self.params['vec_strength_threshold']=VEC_STRENGTH_THRESHOLD
-    #this does some basic analysis of data
-    #
+    
     def anal_closed_stroke_data(self):
 
         self.outdict={}
@@ -305,7 +250,6 @@ class Sun_Anal():
         self.outdict['float_time']=self.crdata['time']
         self.outdict['raw_time']=self.crdata['net_time']
         self.outdict['period']=self.crdata['period']
-        #self.outdict['corr_dict']=self.crdata['corr_dict']
 
         self.analyze_degree_data()
 
@@ -333,9 +277,6 @@ class Sun_Anal():
 
     def assign_sumstats_crux(self,deg_per_bin,timevls):
 
-
-
-        #nonaninds=~np.isnan(timevls)
         self.analinds=np.intersect1d(np.where(timevls>self.bndtimes[self.crkey][0])[0],np.where(timevls< self.bndtimes[self.crkey][1])[0])
         #self.analinds=nonaninds[tmpanalinds]
 
@@ -360,12 +301,10 @@ class Sun_Anal():
             self.sumstats[self.crkey]['time_in_min']=np.array(self.crdata['net_time'])[self.analinds]/60.0
         except:
             print('time error')
-            #pdb.set_trace()
-        #self.sumstats[self.skey]['mot_vel']=np.array(self.crdata['mot_vel'])[self.analinds]
+           
         self.sumstats[self.crkey]['lftwng']=np.array(self.crdata['lftwng'])[self.analinds]
         self.sumstats[self.crkey]['rtwng']=np.array(self.crdata['rtwng'])[self.analinds]
 
-        #self.sumstats[self.skey]['pol_sensor']=np.array(self.crdata['pol_sensor'])[self.analinds]
         self.sumstats[self.crkey]['mot_position_in_rad']=np.array(self.crdata['adjusted_raw_motor_position_in_rad'])[self.analinds]
 
         if 'gain_coefficient' in self.crdata.keys():
@@ -380,14 +319,7 @@ class Sun_Anal():
             self.sumstats[self.crkey]['cloop_duration_in_min']=np.ceil(self.sumstats[self.skey]['time_in_min'][-1]-self.sumstats[self.skey]['time_in_min'][0])
 
 
-                #pdb.set_trace()
-            #this is hack specific for variable_gain_exps with 10/15
-            #training_time=10
-            #try:
-             #   self.sumstats['exp']['switch_time']=self.bndtimes[0][0]/60.+10
-            #except:
-             #   tst=1
-            #self.sumstats['exp']['switch_time']=self.sumstats['exp']['time_in_min'][analbnds[1][0]]
+           
             self.calculate_continuous_heading()
             self.sumstats[self.crkey]['displacement_traj']=self.calc_displacement_trajectory()
 
@@ -444,14 +376,6 @@ class Sun_Anal():
 
 
 
-
-
-
-
-
-
-
-
     def assign_sumstats_modified(self,deg_per_bin,timevls):
         self.sumstats={}
 
@@ -459,8 +383,6 @@ class Sun_Anal():
             exp_type=self.params['exp_type']
         except:
             exp_type='random'
-
-
 
 
         for self.crkey,crbin in enumerate(self.bndtimes):
@@ -497,8 +419,7 @@ class Sun_Anal():
         mot_dt=crdt['mot_rad'][analinds]
         time_dt=crdt['time_in_min'][analinds]
 
-        #FILTER_LEN_IN_PTS=FILTER_LEN_IN_SEC*SAMPLERATE
-
+        
         STEP_LEN_IN_PTS=STEP_LEN_IN_SEC*SAMPLERATE
 
         if analinds.size:
@@ -584,9 +505,6 @@ class Sun_Anal():
 
             self.adjust_motor_data_to_correct_orientation()
 
-            #self.indt['adjusted_raw_motor_position']=self.indt['raw_motor_position']
-                    #self.indt['motor_position_radians']=2*np.pi*((np.mod(self.indt['adjusted_raw_motor_position'],self.calculated_motor_period))/self.calculated_motor_period)
-            #time_list.append(int(self.fname[-10:-6]))
             if np.array(np.nonzero(np.isnan(self.indt['time']))).size:
                 strt_vl=0
                 end_vl=np.max(self.indt['time'])
@@ -636,15 +554,7 @@ class Sun_Anal():
         self.indt['lftwng']=self.tmpdat[:,2]*(180/np.pi)
         self.indt['rtwng']=self.tmpdat[:,3]*(180/np.pi)
 
-        #if self.crday>datetime.datetime(2014,2,1,tzinfo=pytz.utc):
-         #   self.indt['lftwng']=-self.tmpdat[:,3]*(180/np.pi)
-          #  self.indt['rtwng']=-self.tmpdat[:,4]*(180/np.pi)
-        #self.indt['pol_sensor']=self.tmpdat[:,5]
-        #if np.shape(self.tmpdat)[1]>6:
-         #   self.indt['gain_coefficient']=self.tmpdat[:,6]
-        #else:
-         #   self.indt['gain_coefficient']=[]
-
+        
     #for stripe, 1790 is 0, 3844 is 180.
     #easiest conversion is to convert_to_radians immediately and then plot from there
 
@@ -663,135 +573,6 @@ class Sun_Anal():
             tst=1
 
         self.indt['adjusted_raw_motor_position_in_rad']=corrected_rad
-
-        #self.indt['adjusted_raw_motor_position'][highinds]=np.mod(invls[highinds],zero_pos)
-        #self.indt['adjusted_raw_motor_position'][lowinds]=invls[lowinds]+zero_pos
-
-
-
-        #self.params['adjusted_start_angle']=self.params['start_pos_deg']+calc.rad_to_deg(offset_in_radians)
-        #self.params['new_horiz_offset']=new_horiz_offset
-
-        #self.params['fit_covmat']=covmat
-
-    #for linear polarizer, this now returns offset of minimum from zero
-    def make_fit_calculation(self,xvls,yvls,**kwargs):
-        if 'filter_type' not in self.params:
-            self.params['filter_type']='linear'
-        if 'filter_type' in self.params:
-
-            if 'ersatz_sun' in self.params:
-                if 'ersatz_sun' in self.params:
-
-                    sun_flag=1
-
-                try:
-                        #first take a histogram with 36 mean values, then calculate the peak using weighted mean
-                    raw_yvls=kwargs['raw_yvls']
-                    bins=np.linspace(0,2*np.pi,48)
-
-                    if sun_flag:
-                        goodinds= np.intersect1d(np.where(raw_yvls>0)[0],np.where(raw_yvls<12)[0])
-
-                    fitvls=vmfit.make_fit(xvls,raw_yvls,plot_fit=True)
-                    #fitvls=calc.vonmises_fit_new(xvls[goodinds],yvls[goodinds]-np.min(yvls[goodinds]))
-                    fitout=fitvls[0][1]
-
-                    if OVERWRITE_OFFSET_FLAG:
-                        fitout=OVERWRITE_OFFSET_VL
-                    if fitout>np.pi:
-                        fit1=fitout-np.pi
-                    else:
-                        fit1=fitout+np.pi
-                    fit0=1
-
-
-                    polarizer_correction_value=0
-                    
-                except:
-                    print ('fit error')
-                    tst=1
-            else:
-                if self.params['filter_type']=='linear':
-                    try:
-                        fit0,fit1=calc.cos_ls_fit(xvls,yvls,num_cycles=2,plot_flag=1)
-                    except:
-                        fit0=0
-                        fit1=0
-                    offset_value_if_negative=np.pi/2
-                    polarizer_correction_value=np.pi/2
-                elif self.params['filter_type']=='circular':
-                    fit0,fit1=calc.cos_ls_fit(xvls,yvls,num_cycles=1)
-                    offset_value_if_negative=np.pi
-                    polarizer_correction_value=0
-
-
-
-                else:
-                    fit0,fit1=calc.cos_ls_fit(xvls,yvls,num_cycles=2,plot_flag=1)
-                    offset_value_if_negative=np.pi/2
-                    polarizer_correction_value=np.pi/2
-
-
-            if fit0<0:
-                horiz_offset=fit1+offset_value_if_negative
-            else:
-                horiz_offset=fit1
-
-            if 'intensity_cue' in self.params.keys():
-                if self.params['intensity_cue']:
-                    intensity_anal=1
-                else:
-                    intensity_anal=0
-            else:
-                intensity_anal=0
-
-            if 'experiment_type' in self.params.keys():
-                if self.params['experiment_type']=='wedge_45':
-                    wedge_anal=1
-                else:
-                    wedge_anal=0
-            else:
-                wedge_anal=0
-
-
-
-            if intensity_anal or wedge_anal:
-
-                new_horiz_offset=polarizer_correction_value+self.adjust_motor_for_intensity_cues(xvls,yvls,horiz_offset)
-
-            else:
-
-                new_horiz_offset=polarizer_correction_value+horiz_offset
-
-        return new_horiz_offset
-
-    def adjust_motor_for_intensity_cues(self,in_xvls,in_yvls,horiz_offset):
-        radian_bnds=[]
-        crmed=[]
-        adj_vls=(in_xvls-horiz_offset)+2*np.pi
-
-        new_adj_vls=np.mod(adj_vls,2*np.pi)
-
-        if self.params['filter_type']=='linear':
-            #these are the bounds over which to search
-
-            radian_bnds.append([np.pi/2-.2, np.pi/2+.2])
-            radian_bnds.append([3*np.pi/2-.2 ,3*np.pi/2+.2])
-            for crbnds in radian_bnds:
-                crinds=np.intersect1d(np.where(new_adj_vls>crbnds[0])[0],np.where(new_adj_vls<crbnds[1])[0])
-                crmed.append(np.median(in_yvls[crinds]))
-            #make the 270 degree value the lower value
-            if crmed[1]>crmed[0]:
-                new_horiz_offset=horiz_offset+np.pi
-            else:
-                new_horiz_offset=horiz_offset
-        elif self.params['filter_type']=='circular':
-           new_horiz_offset=horiz_offset
-        return new_horiz_offset
-        return new_minimum_value
-
-
 
 
 
@@ -835,52 +616,7 @@ class Sun_Anal():
                 
                 print ('no data')
 
-    #takes crdata and transforms it into open_dt
-    #open_sumdata[0-n] represents data from different conditions with positive and negative
-    #open_sumdata[0]['pos'],open_sumdt[0]['neg']....
-    def arrange_open_loop_data(self):
-        self.open_sumdt=[]
-        exparray=np.array(self.params['open_loop_exp_list'])
-        for crlistind,cr_pos_gain_value in enumerate(np.unique(abs(exparray))):
-            self.POSCT=0
-            self.NEGCT=0
-            self.open_sumdt.append({'pos':{},'neg':{}})
-            pos_expinds=np.where(exparray==cr_pos_gain_value)[0]
-            neg_expinds=np.where(exparray==-cr_pos_gain_value)[0]
-            for self.crexpind in pos_expinds:
-                #crbnds=get_current_bnds(self.bnds, crind,self.params)
-                self.cut_open_loop_data(crlistind,'pos')
-                self.POSCT=self.POSCT+1
-            for self.crexpind in neg_expinds:
-                #crbnds=get_current_bnds(self.bnds, crind,self.params)
-                self.cut_open_loop_data(crlistind,'neg')
-                self.NEGCT=self.NEGCT+1
-
-    #called by arrange_open_loop_data
-    def cut_open_loop_data(self,crlistind,open_drxn):
-        time_bnds=self.get_index_bnds(self.crdata['net_time'],self.crexpind)
-
-        sensor_bnds=np.where(np.array(self.crdata['pol_sensor'])[time_bnds]>POL_SENSOR_MINIMUM)
-        try:
-            crbnds=time_bnds[sensor_bnds]
-        except:
-            pdb.set_trace()
-        tmpdt={}
-
-        tmpdt['open_loop_gain']=np.array(self.params['open_loop_exp_list'])[self.crexpind]
-        tmpdt['lftwng']=np.array(self.crdata['lftwng'])[crbnds]
-        tmpdt['rtwng']=np.array(self.crdata['rtwng'])[crbnds]
-        tmpdt['pol_sensor']=np.array(self.crdata['pol_sensor'])[crbnds]
-        tmpdt['raw_motor_position']=np.array(self.crdata['adjusted_raw_motor_position'])[crbnds]
-        tmpdt['motor_position_radians']=np.array(self.crdata['motor_position_radians'])[crbnds]
-
-        tmpdt['net_time']=np.array(self.crdata['net_time'])[crbnds]-self.crdata['net_time'][crbnds[0]]
-        tmpdt['wingdiff']=tmpdt['lftwng']-tmpdt['rtwng']
-        if open_drxn=='pos':
-
-            self.open_sumdt[crlistind]['pos'][self.POSCT]=tmpdt
-        elif open_drxn=='neg':
-            self.open_sumdt[crlistind]['neg'][self.NEGCT]=tmpdt
+   
 
     #called by cut_open_loop_data
     def get_index_bnds(self,timevls,**kwargs):
@@ -909,152 +645,12 @@ class Sun_Anal():
             except:
                 print 'bounds problem'
 
-###
-###
-#functions for deatling with open loop data
-###
-###
-    #this function will take every open loop experiment and ma
-
-
-#called by process_data_by_fly
-
-
-    def make_offset_corrections(self,gainind,crkey,crexpnum):
-        KEYLIST=['pol_sensor','wingdiff']
-        for current_data in KEYLIST:
-            if self.keyind==0:
-                crvls=self.crdict[current_data]
-            else:
-                crvls=self.crdict[current_data][::-1]
-            if(self.offset<0):
-                    corr_vls=crvls[-self.offset:]
-                    #data needs to be moved to right
-            elif(self.offset>0):
-                    nanarray=np.empty(self.offset)
-                    nanarray[:]=np.nan
-                    corr_vls=np.concatenate((nanarray,crvls))
-            else:
-                corr_vls=crvls
-            self.open_sumdt[gainind][crkey][crexpnum][current_data+'_offcorr']=corr_vls
-            self.timediff=self.open_sumdt[0]['pos'][0]['net_time'][1]-self.open_sumdt[0]['pos'][0]['net_time'][0]
-            corr_time=np.linspace(0,len(corr_vls)*self.timediff,num=len(corr_vls))
-            self.open_sumdt[gainind][crkey][crexpnum]['net_time_offcorr']=corr_time
-
-            if(current_data==KEYLIST[0]):
-                self.lenlist.append(len(corr_vls))
-
-    def reduce_to_single_cycle(self):
-        NUM_FULL_CYCLES=1
-        for gainind,crdt in enumerate(self.open_sumdt):
-            cr_drxn_key='pos'
-
-            mnpol=crdt[cr_drxn_key]['mn_pol_sensor']
-            #L8=int(len(mnpol)/16)
-            #calc_pol=mnpol[L8:-L8]-np.mean(mnpol[L8:-L8])
-            calc_pol=mnpol-np.mean(mnpol)
-            output_vls=np.correlate(calc_pol,calc_pol,'same')
-            #need to determine period of mean value and then relate this to ave_time which gives time difference
-            self.make_cut_inds(output_vls)
-            self.rearrange_data_by_cut_points()
-
-    def make_cut_inds(self,output_vls):
-        import peakdetect as peakdetect
-        self.cut_inds=[]
-
-        peak_data=peakdetect.peakdetect(output_vls)
-        if (len(peak_data[0])==3):
-            full_cycle_length=peak_data[0][2][0]-peak_data[0][0][0]
-        #use minima
-        elif len(peak_data[1])==2:
-
-            full_cycle_length=2*peak_data[1][1][0]-peak_data[1][0][0]
-        elif len(peak_data[0])==2:
-            full_cycle_length=2*peak_data[0][1][0]-peak_data[0][0][0]
-        number_of_full_cycles=np.floor(len(self.open_sumdt[0]['ave_time'])/full_cycle_length)
-        start_cut_ind=0
-        for cycle_number in np.arange(0,number_of_full_cycles):
-            self.cut_inds.append([start_cut_ind, start_cut_ind+full_cycle_length])
-            start_cut_ind=start_cut_ind+full_cycle_length
-
-
-    #start by just cutting the means
-    def rearrange_data_by_cut_points(self):
-        self.CUT_INITIAL_TIME=2
-        for gainind,crdt in enumerate(self.open_sumdt):
-            for cr_drxn_key in ['pos','neg']:
-
-                for crdatakey in ['mn_wingdiff','mn_pol_sensor']:
-                    tmplist=[]
-                    cutkey=crdatakey+'_cut'
-
-                    self.open_sumdt[gainind][cr_drxn_key][cutkey]={}
-                    for cut_ind_num in np.arange(0,len(self.cut_inds)):
-                        crinds=self.cut_inds[cut_ind_num]
-                        tmpvl=crdt[cr_drxn_key][crdatakey][crinds[0]:crinds[1]]
-
-                        self.open_sumdt[gainind][cr_drxn_key][crdatakey+'_cut'][cut_ind_num]=tmpvl
-                        tmplist.append(tmpvl)
-                    crmn,stdvl=calc.mnstd(tmplist)
-
-                    self.open_sumdt[gainind][cr_drxn_key][crdatakey+'_cut']['mean']=crmn
-
-    def calc_wingdiff_mn_std(self):
-        MNCT=0
-        mnvl=[]
-        DATLEN=np.floor(np.median(self.lenlist))
-        self.ave_time=np.linspace(0,DATLEN*self.timediff,num=DATLEN)
-
-        for gainind,crgaindata in enumerate(self.open_sumdt):
-            for cr_drxn_key in ['pos','neg']:
-                for cr_datatype_key in ['pol_sensor_offcorr','wingdiff_offcorr']:
-                    tmplist=[]
-                    crdt=crgaindata[cr_drxn_key]
-                    indlist=[x for x in crdt.keys() if type(x)  is int]
-                    for crexpnum in indlist:
-                        tmpvl=crdt[crexpnum][cr_datatype_key]
-                        if len(tmpvl)>=DATLEN:
-                            tmplist.append(tmpvl[0:DATLEN])
-                        else:
-                            difflen=DATLEN-len(tmpvl)
-                            tmparray=np.empty(difflen)
-                            tmparray[:]=np.nan
-                            tmplist.append(np.concatenate((tmpvl,tmparray)))
-                    crmn,stdvl=calc.mnstd(tmplist)
-                    if cr_datatype_key=='wingdiff_offcorr':
-                        mnvl.append(crmn)
-
-                    self.open_sumdt[gainind][cr_drxn_key]['mn_' + cr_datatype_key.split('_offcorr')[0]]=crmn
-                    MNCT=MNCT+1
-
-                    self.open_sumdt[gainind][cr_drxn_key]['ster_wingdiff']=stdvl/np.sqrt(len(tmplist))
-
-            self.open_sumdt[gainind]['summed_wing_diff']=np.sum(mnvl,axis=0)
-            self.open_sumdt[gainind]['ave_time']=self.ave_time
-
-    def get_gain(self):
-        try:
-            gains=self.params['gain_list'].tolist()
-        except:
-            gains=[self.params['closed_loop_gain']]
-        if 'crgain' in self.params:
-            self.crdata['crgain']=self.params['crgain']
-        else:
-            if self.params['closed_loop_experiment_list'][0]=='zero':
-                self.crdata['crgain']=[0]+gains
-            else:
-                self.crdata['crgain']=gains+[0]
-
+    
 ###
 ###
 #functions for plotting
 ###
 ###
-
-#called by make_plots_by_file
-#crdata comes from prep_data_fxn
-
-
 
 
     def make_example_figure(self):
@@ -1070,21 +666,13 @@ class Sun_Anal():
             axmotor=[]
             axhist=[]
             axwing=[]
-            #for key in ['stripe','sun']:
-
-                #axpol_hist[key]=[]
+           
 
             axwing.append(pylab.subplot(gs[0:4, 0:5]))
             axwing.append(pylab.subplot(gs[0:4, 6:11]))
             ax_mean_coherence=pylab.subplot(gs[5:6, 0:8])
             ax_vec_strength=pylab.subplot(gs[7:8,0:8])
-            #axcolorbar=pylab.subplot(gs[5:6,9:11])
-            #for key in ['stripe','exp']:
-            #axmotor['stripe'].append(pylab.subplot(gs[14:18,0:5]))
-            #axmotor['stripe'].append(pylab.subplot(gs[14:18,6:11]))
-
-            #axmotor['sun'].append(pylab.subplot(gs[8:12,0:5],sharex=axwing[0]))
-            #axmotor['sun'].append(pylab.subplot(gs[8:12,6:11],sharex=axwing[1]))
+           
             axmotor=pylab.subplot(gs[14:18,0:5])
 
             try:
@@ -1095,20 +683,12 @@ class Sun_Anal():
                 print('example error')
 
             fpb.make_raw_plot(self.crdt,axmotor, axhist)
-            #for crind in np.arange(len(self.datvls['splitstats'])):
-             #   axsubpol.append(pylab.subplot(gs[14:18,crind*2:crind*2+2], polar=True))
-
-            #axgain=pylab.subplot(gs[14:18,5:7])
+           
             axpos=[]
-            #axpos.append(pylab.subplot(gs[14:18,7:9]))
-            #axpos.append(pylab.subplot(gs[14:18,9:11]))
+            
             axpolarizer=pylab.subplot(gs[0:4,9:11])
 
-            #axpol_hist['stripe'].append(pylab.subplot(gs[14:18,5]))
-            #axpol_hist['stripe'].append(pylab.subplot(gs[14:18,11]))
-            #axpol_hist['sun'].append(pylab.subplot(gs[8:12,5]))
-            #axpol_hist['sun'].append(pylab.subplot(gs[8:12,11]))
-
+           
 
             fig_traj=pylab.figure()
             gs2 = gridspec.GridSpec(5, 2)
@@ -1127,8 +707,7 @@ class Sun_Anal():
                 print ('no self.crdt!')
                 return
 
-            #plotsum=plot_sum16.Plot_Sum(example_dt=crdt,splitdt=self.datvls['splitstats'],params=self.params)
-            #crdt['tim']
+           
 
             if crdt:
 
@@ -1139,8 +718,7 @@ class Sun_Anal():
                 if os.path.isfile(self.save_file_name):
 
                     os.remove(self.save_file_name)
-                #if os.path.isfile(self.fname.strip('.txt')+'_' + 'UNPAIRED_sumdata.pck'):
-                #   os.remove(self.fname.strip('.txt')+'_' + 'UNPAIRED_sumdata.pck')
+               
                 try:
                     self.figname=self.pckname.split('/')[-1].strip('_sumdata.pck')
                     self.fig_trajname=self.pckname.split('/')[-1].strip('_sumdata.pck')+'traj'
@@ -1219,81 +797,7 @@ class Sun_Anal():
         tit_str=self.fname
         return tit_str
 
-    def plot_gain_value(self,ax,axpos,**kwargs):
-        gainfit=[]
-        CANONICAL_PANEL_GAIN=40.0
-
-        if 'plot_extra_fig' in kwargs:
-            if kwargs['plot_extra_fig']:
-                PLOT_EXTRA_FLAG=1
-            else:
-                PLOT_EXTRA_FLAG=0
-        else:
-            PLOT_EXTRA_FLAG=0
-
-        wd_deg=self.crdt['lftwng']-self.crdt['rtwng']
-        motvel_steps=self.crdt['mot_vel']
-        steps_per_rotation=self.params['steps_per_rotation']
-       #call standard panel gain 40.0 pixels/radian
-        panel_gain_in_degrees_per_radian_wing=(CANONICAL_PANEL_GAIN/64)*360
-        degrees_per_radian=(360/(2*np.pi))
-        plt_panel_gain=panel_gain_in_degrees_per_radian_wing/degrees_per_radian
-        try:
-            motor_gain_degrees_per_radian=self.params['closed_loop_gain'][0]
-            plt_motor_gain=-motor_gain_degrees_per_radian/degrees_per_radian
-            mot_positions=self.crdt['mot_deg']
-            self.make_position_plot(mot_positions,wd_deg,motvel_steps,steps_per_rotation,axpos)
-        except:
-            print('no closed_loop_gain')
-
-        if 'cr_coeff_list' in self.params:
-            motor_gain_degrees_per_radian=-150.0
-            plt_motor_gain=-motor_gain_degrees_per_radian/degrees_per_radian
-            #coeff=self.params['cr_coeff_list'][0]
-            coeff=10.0
-            #asy_vl=self.params['asy_vl_list'][0]
-
-            asy_vl=5000.0
-            linear_gains_to_plot=[plt_panel_gain/360.0,plt_motor_gain/360.0]
-
-            fit_slope=plt.plot_wing_diff_rotation_speed(ax,wd_deg,-motvel_steps,steps_per_rotation,downsample=40,linear_gain=linear_gains_to_plot,nonlinear_gain=[coeff,asy_vl],calc_fit=1,wd_cutoff=10)
-        else:
-            try:
-                motor_gain_degrees_per_radian=self.params['closed_loop_gain'][0]
-                plt_motor_gain=-motor_gain_degrees_per_radian/degrees_per_radian
-                linear_gains_to_plot=[plt_panel_gain/360.0,plt_motor_gain/360.0]
-
-                fit_slope=plt.plot_wing_diff_rotation_speed(ax,wd_deg,-motvel_steps,steps_per_rotation,downsample=2,linear_gain=linear_gains_to_plot,calc_fit=1,wd_cutoff=10)
-            except:
-                fit_slope=0
-                print('no closed_loop_gain')
-        if PLOT_EXTRA_FLAG:
-            fig=pylab.figure()
-            ax=[]
-
-
-            #positions are 45 degrees, 90 degrees, 135 degrees
-            positions_to_plot=[[[40,50],[220,230]],[[87.5,92.5],[267.5,272.5]],[[60,65],[240,245]],[[310,320],[130,140]],[[77.5,80],[255.5,260]]]
-            ax.append(fig.add_subplot(2,1,1))
-            colvls=['r','c','k','g','m']
-            for ind,crpos_list_to_plot in enumerate(positions_to_plot):
-                crposinds=[]
-                for crpos_to_plot in crpos_list_to_plot:
-
-                    cr_mot_positions=mot_positions[np.arange(0,len(mot_positions)/2)]
-                    crposinds.append(np.intersect1d(np.where(cr_mot_positions>crpos_to_plot[0])[0],np.where(cr_mot_positions<crpos_to_plot[1])[0]))
-                cr_comb_inds=np.concatenate((crposinds[0],crposinds[1]),axis=2)
-
-                try:
-                    plt.plot_wing_diff_rotation_speed(ax[-1],wd_deg[cr_comb_inds],-motvel_steps[cr_comb_inds],steps_per_rotation,linear_gain=linear_gains_to_plot,wd_cutoff=20,color_flag=colvls[ind])
-                except:
-                    print('no gain plot')
-                ax[-1].set_aspect(50)
-            fig.savefig(self.datapath+'gains'+self.crfile.split('_')[-1].split('.txt.')[0]+'.pdf')
-
-        return fit_slope
-
-
+    
     def make_position_plot(self,mot_deg,wd_deg,motvel_steps,steps_per_rotation,axpos):
         motvel_rotations=(motvel_steps/steps_per_rotation)
         sy, bin_edges = np.histogram(mot_deg, bins=100, weights=np.abs(wd_deg))
@@ -1318,52 +822,7 @@ class Sun_Anal():
         ax.get_yaxis().set_ticks([0,0.25,0.5,0.75,1.0])
         ax.get_yaxis().set_ticklabels(['0','0.25','0.75','1.0'],fontsize=6)
 
-    def make_split_data(self,cr_mn,cr_ln,bin_vls,range_vls):
-        #HARD CODE FOR 7.5 MINUTES
-        if self.variable_gain_flag:
-            try:
-                HALF_SECONDS=self.params['variable_closed_loop_duration_sec']
-            except:
-                HALF_SECONDS=300.
-            half_point=HALF_SECONDS/STEP_LEN_IN_SEC
-            first_half_inds=np.arange(int(half_point))
-        else:
-            HALF_SECONDS=7.5*60
-            half_point=HALF_SECONDS/STEP_LEN_IN_SEC
-            first_half_inds=np.arange(int(half_point))
-
-
-        if self.variable_gain_flag:
-            splitmn=[]
-            splitln=[]
-            for crinds in [0,1]:
-                splitmn.append(np.array(self.crdt['mn_vector_lst']))
-                splitln.append(np.array(self.crdt['len_vector_lst']))
-            return splitmn, splitln
-        else:
-            if len(cr_mn)>first_half_inds[-1]:
-
-                second_half_inds=np.arange(first_half_inds[-1],len(cr_mn),1)
-                splitmn=[]
-                splitln=[]
-
-                for crinds in [first_half_inds,second_half_inds]:
-                    splitmn.append(np.array(self.crdt['mn_vector_lst'])[crinds])
-                    splitln.append(np.array(self.crdt['len_vector_lst'])[crinds])
-
-                return splitmn,splitln
-            else:
-                splitmn=[]
-                splitln=[]
-                return splitmn,splitln
-        #for crind in [0,1]:
-         #   if crind is 0:
-
-          #  else:
-
-
-
-
+    
 
     def calc_vec_strength_threshold_mean(self,input_ln,input_mn):
 
@@ -1417,9 +876,7 @@ class Sun_Anal():
                 self.plot_closed_stroke_data()
                 
                 self.plot_closed_sumdata()
-        elif self.exp_type=='open':
-            self.plot_open_stroke_data()
-            #self.plot_cut_data()
+        
 
     #rewritten to use data from self.datvls
     #quickly hacked to automatically plot paired data
@@ -1551,35 +1008,7 @@ class Sun_Anal():
                 plt.polar_plot(self.axhandles[-1],plot_dt,add_text=1,title='SUB'+str(crkey))
                 self.startcol=self.startcol+1
 
-#first pass, just plot all the data
-    def plot_open_stroke_data(self):
-        plotkeys=['uncorrected']
-        nrows=5
-        ncol=2
-        self.fig=[]
-        for self.plot_type in plotkeys:
-            for self.crgainvl,cr_gain_data in enumerate(self.open_sumdt):
-                axh,fig=set_up_open_loop_figure(nrows,ncol)
-                fig.suptitle(self.fname+'\n'+self.plot_type)
-                craxvl=0
-                keylist=['pos','neg']
-                for crkey in keylist:
-                    self.crdt=cr_gain_data[crkey]
 
-                    cr_gain_vl=self.crdt[0]['open_loop_gain']
-                    self.crax=axh[craxvl:craxvl+nrows]
-                    self.crax[0].set_title('gain is %f'%cr_gain_vl)
-                    self.raw_height=0
-                    craxvl=craxvl+nrows
-                    indlist=[x for x in self.crdt.keys() if type(x)  is int]
-                    for self.crexpnum in indlist:
-                        self.make_open_loop_plot()
-                        self.raw_height=self.raw_height+50
-                    self.calc_mean_wingdiff(crkey)
-                    self.plot_mean_vls(crkey)
-                self.calc_mean_wingdiff(keylist)
-                self.plot_mean_vls(keylist)
-                self.fig.append(fig)
 
     def calc_mean_wingdiff(self,inkey):
         tmplist=[]
@@ -1599,56 +1028,8 @@ class Sun_Anal():
 
             self.open_sumdt[self.crgainvl]['summed_wingdiff']=np.sum(tmplist,axis=0)
 
-    def plot_cut_data(self):
-        for gainind,cr_gain_data in enumerate(self.open_sumdt):
-            AXIND=0
-            axh,fig=set_up_open_loop_figure(3,2,ax_order='normal')
-            mnvl=[]
-            for cr_drxn_key in ['pos','neg']:
-                crdt=self.open_sumdt[gainind][cr_drxn_key]
-                for crdatkey in ['mn_pol_sensor_cut', 'mn_wingdiff_cut']:
-                    for crind in crdt[crdatkey].keys():
-                        crvls=crdt[crdatkey][crind]
-                        if crind=='mean':
-                            col='r'
-                            if crdatkey=='mn_wingdiff_cut':
-                                mnvl.append(crvls)
-                        else:
-                            col='k'
-
-                        axh[AXIND].plot(crvls,color=col)
-                    AXIND=AXIND+1
-            sumout=np.sum(mnvl,axis=0)
-            for crmn in mnvl:
-                axh[AXIND].plot(crmn,color='k')
-            axh[AXIND].plot(sumout,color='r')
-
-    #called by plot_open_stroke_data
-    def make_open_loop_plot(self):
-        crexp=self.crdt[self.crexpnum]
-        timevls=crexp['net_time']
-        #if self.plot_type == 'corrected':
-        #    suffix='_offcorr'
-        #elif self.plot_type == 'uncorrected':
-        #    suffix=''
-        self.crax[0].plot(timevls,crexp['rtwng']+self.raw_height,'r')
-        #if not len(timevls) == len(crexp['wingdiff'+suffix]):
-        self.crax[0].plot(timevls,crexp['lftwng']+self.raw_height,'c')
-        self.crax[1].plot(timevls,crexp['wingdiff'],'k')
-        self.crax[2].plot(timevls,crexp['pol_sensor'])
-
-        mot=crexp['motor_position_radians']
-        self.mot_binvls=np.linspace(0,2*np.pi,num=100)
-        srt_ind=np.argsort(mot)
-        interp_pol_sensor=np.interp(self.mot_binvls,mot[srt_ind],crexp['pol_sensor'][srt_ind])
-        self.crax[3].plot(self.mot_binvls,interp_pol_sensor)
-        interp_wing_diff=np.interp(self.mot_binvls,mot[srt_ind],crexp['wingdiff'][srt_ind])
-        self.crdt[self.crexpnum]['interp_wingdiff']=interp_wing_diff
-
-        self.crax[4].plot(self.mot_binvls,interp_wing_diff,'k')
-        #self.crax[3].plot(uncorr_timevls,crexp['raw_motor_position'],'k')
-        #fourth plot is radians vs. polarizer value
-        #fifth plot is radians vs. wingbeat difference
+    
+   
 
     def plot_mean_vls(self,inkey):
 
@@ -1677,29 +1058,7 @@ class Sun_Anal():
                 axh.plot([vls/60,vls/60],[yvls[0], yvls[1]],'r--')
     #make new file (that can be deleted)
 
-    def check_calibration(self):
-        SAMPLE_SPACING=10
-        import peakdetect
-        period_data={}
-        #calc_calibration_file=[x for x in os.listdir(datapath) if 'period.pck' in x]
-
-        #filevl=[x for x in os.listdir(datapath) if 'calibration.pck' in x]
-        calibrate_file=[x for x in os.listdir(self.datapath) if 'calculated_period.pck' in x]
-        try:
-            #
-            period_data=fh.open_pickle(self.datapath+calibrate_file[0])
-
-            self.calculated_motor_period=period_data['calculated_motor_period']
-        except:
-            crbnds=self.get_index_bnds(self.indt['net_time'],0)
-            mot=self.indt['raw_motor_position'][crbnds]
-            mot_x=np.arange(np.min(mot),np.max(mot),SAMPLE_SPACING)
-            pol=self.indt['pol_sensor'][crbnds]
-            output_vls,period,peakdata=calc.find_period(mot_x,mot,pol)
-            self.calculated_motor_period=SAMPLE_SPACING*period
-            period_data['calculated_motor_period']=SAMPLE_SPACING*period
-            #pdb.set_trace()
-            fh.save_to_pickle(self.datapath+'calculated_period.pck',period_data)
+    
 ################
 
 
@@ -1716,28 +1075,6 @@ def check_if_period_calculated(fname):
     else:
         return
 
-def set_up_open_loop_figure(nrows,ncol,**kwargs):
-    if 'ax_order' in kwargs:
-        ax_order=kwargs['ax_order']
-    else:
-        ax_order='by_column'
-
-    fig=pylab.figure()
-
-    ax=[]
-    totalaxes=nrows*ncol
-    if ax_order=='by_column':
-        startvls=[1,2]
-        for cr_start_vl in startvls:
-            for sub_axis_num in np.arange(0,totalaxes/2):
-                print cr_start_vl+sub_axis_num*2
-                ax.append(fig.add_subplot(nrows,ncol,cr_start_vl+sub_axis_num*2))
-    else:
-        for sub_axis_num in np.arange(1,totalaxes+1):
-            ax.append(fig.add_subplot(nrows,ncol,sub_axis_num))
-
-    
-    return ax,fig
 
 def set_up_closed_loop_figure(nrow,ncol):
     fig=pylab.figure()
