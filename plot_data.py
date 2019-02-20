@@ -1,11 +1,14 @@
 #plot_data.py makes plots that comprise Figures 7, Figure 7 supplementary,
 #and Figure 8 supplementary of Sullivan, Warren, Doe 2019, submitted to Elife
 
+##Implemented in Python 2.7
+
 #USAGE 
 #python plot_data.py 
 
-#dependencies: figurefirst, 
-#            various libraries from https://github.com/timothylwarren/py_utilities
+#DEPENDENCIES
+#
+#figurefirst,various libraries from https://github.com/timothylwarren/py_utilities
 
 ##FLY_TYPE_TO_PLOT sets which data will be plotted. Only one FLY_TYPE_TO_PLOT value
 #below should be uncommented. Other two commented out.
@@ -20,6 +23,12 @@
 
 #Fig. 7 and Fig. 7 supplement F-I
 # mcherryRNAI with heat shock, eyeless RNAi no heat shock, eyeless RNAi heat shock
+
+#Loads summary data from 'summary_data.pck'
+
+#Output is .svg files saved to directory specified in self.savepath variable
+
+
 FLY_TYPE_TO_PLOT=['mcherryhs_flies','ey_rnai_con_flies','eyrnai_exp_flies']
 
 
@@ -96,12 +105,12 @@ class Example_Plot():
     #calls prep_data_fxn for each file
     def __init__ (self,**kwargs):
         self.datapath=sum_data_path
-        self.pck_open_name='vecstrength_unpaired_sumsundata.pck'
+        self.pck_open_name='summary_data.pck'
 
-        self.sumdt=fh.open_pickle(self.datapath+self.pck_open_name)['sumdt']
+        self.sumdt=fh.open_pickle(self.pck_open_name)['sumdt']
         
-        self.adt=fh.open_pickle(self.datapath+self.pck_open_name)['adt']
-        pdb.set_trace()
+        self.adt=fh.open_pickle(self.pck_open_name)['adt']
+        
 
 
 
@@ -131,43 +140,20 @@ class Example_Plot():
                 self.plot_all_raw(crtype)
                 self.ordered_fly_indices[crtype]=self.ordered_indlist
 
-        #self.sumfig=pylab.figure()
-
-
-
-        #if PLOT_EXAMPLE:
-         #   self.plot_example(ax)
+       
         self.plot_summary()
-        if PLOT_SCATTER:
-            self.axscatter['gal_tnt_inact_flies']=ax['tnt_inact_scatter']
-            self.axscatter['wedge_kir_flies']=ax['wedge_scatter']
-            for crtype in ['gal_tnt_inact_flies','wedge_kir_flies']:
-                if crtype is 'gal_tnt_inact_flies':
-                    crax=ax['tnt_inact_scatter']
-                else:
-                    crax=ax['wedge_scatter']
-
-                self.make_plot_of_scatter_headings(crax,crtype)
-        #self.sumfig.savefig(self.datapath+'sumfig.pdf')
-
-        if PLOT_CORRELATION:
-            ax=self.axsum
-            self.plot_correlation(ax)
-
-
-
+ 
         self.savepath=input_data_path
 
         for crflytype in FLY_TYPE_TO_PLOT:
             for crind in np.arange(NUM_EXAMPLE_FIGS):
                 add_str='sun_dataraw_%s%s.svg'%(str(crflytype),str(crind))
                 save_svg=self.savepath+add_str
-            #self.layout.set_layer_visability('Layer 1',False)
-                #self.layout[crind].insert_figures()
+            
                 self.layout[crflytype][crind].save(save_svg)
         for crflytype in FLY_TYPE_TO_PLOT:
             save_sum_svg=self.savepath+str(crflytype)+'sun_sumdata.svg'
-            #self.sum_layout[crfltype].insert_figures()
+          
             self.sum_layout[crflytype].save(save_sum_svg)
 
         self.vecfig.savefig(dropbox_path+'vec_strength.eps')
@@ -202,8 +188,6 @@ class Example_Plot():
 
     def plot_summary(self):
 
-
-        
         if PLOT_VEC_STRENGTH:
             self.vecfig=pylab.figure()
             self.ax_vecstrength=[]
@@ -222,7 +206,7 @@ class Example_Plot():
             self.ax_hist_dir.append(pylab.subplot(3,4,11))
             self.ax_hist_dir.append(pylab.subplot(3,4,12))
 
-            #self.plot_hist_dir(self.ax_hist_dir)
+            
             self.plot_vec_strength_and_dir(self.ax_vecstrength,self.ax_hist_dir,self.ax_nonfrontal_vec)
         
         self.plot_net_displacement(self.axsum)
@@ -368,13 +352,7 @@ class Example_Plot():
                        ax=axvec[indnum]
                        self.make_hist_cumulative(ax,indt,horiz_pos,vert_pos,vert_offset,crcol,hst_bnds)
 
-                        #axvec[indnum].text(0.2,0.2+fly_type_ind*.2,str(len(indt)),color=COLVLS[COLCT])
-                        #axvec[indnum].plot(np.mean(indt),0.1,'v',color=COLVLS[COLCT])
-                        #cr_str="%.2f"%np.mean(indt)
-                        #axvec[indnum].text(np.mean(indt),0.02*fly_type_ind*.02,cr_str,color=COLVLS[COLCT],fontsize=6)
-                        #twplt.plot_hist(axvec[indnum],indt,hst_bnds=hst_bnds,num_bins=100,plt_type='cumulative',col=COLVLS[COLCT])
-
-
+                      
 
                     #plot position
                     indt=np.array(self.adt[flytype][indnum]['mnrad'])
@@ -400,13 +378,7 @@ class Example_Plot():
                     ax=axhist[indnum]
                     self.make_hist_cumulative(ax,dir_dt[indnum],horiz_pos,vert_pos,vert_offset,crcol,hst_bnds)
 
-                    #axhist[indnum].text(0.2,0.2+fly_type_ind*.2,str(np.count_nonzero(~np.isnan(thresh_inds))),color=COLVLS[COLCT])
-                    #cr_str="%.2f"%np.mean(dir_dt[indnum])
-                    #axhist[indnum].text(np.mean(dir_dt[indnum]),0.02*fly_type_ind*.02,cr_str,color=COLVLS[COLCT],fontsize=6)
-                    #axhist[indnum].plot(np.mean(dir_dt[indnum]),0.1,'v',color=COLVLS[COLCT])
-                    #twplt.plot_hist(axhist[indnum],dir_dt[indnum],hst_bnds=[0,np.pi],plt_type='cumulative',num_bins=100,col=COLVLS[COLCT])
-
-
+                 
                     #find position where angle is not frontal according to threshold.
                     ax=axvec_nonfrontal[indnum]
                     nonfrontal_inds_high=np.where(indt>FRONTAL_THRESH)[0]
@@ -431,13 +403,7 @@ class Example_Plot():
                 concat_dt_vec_front[flytype]=front_dt_combined
                 self.make_hist_cumulative(crax,front_dt_combined,horiz_pos,vert_pos,vert_offset,crcol,hst_bnds)
 
-                #axvec[indnum].text(0.2,fly_type_ind*.1,str(np.count_nonzero(~np.isnan(crdt))),color=COLVLS[COLCT])
-
-                #axvec[indnum].plot(np.mean(crdt),0.1,'v',color=COLVLS[COLCT])
-                #twplt.plot_hist(axvec[indnum],crdt,hst_bnds=hst_bnds,num_bins=100,plt_type='cumulative',col=COLVLS[COLCT])
-                #concat_dt_all[flytype]=np.reshape(indt,len(indt))
-
-                #position
+             
 
                 crdt=np.concatenate((dir_dt[0],dir_dt[1]))
 
@@ -520,24 +486,7 @@ class Example_Plot():
             axhist[ind].get_yaxis().set_ticklabels(['0','0.5','1'],fontsize=6)
             axhist[ind].set_xlabel('mean heading (deg)',fontsize=6)
             axhist[ind].set_ylabel('probability',fontsize=6)
-            #axvec[ind].set_aspect(1)
-
-
-        # for ind in [3]:
-        #     fpl.adjust_spines(ax[ind],['left','bottom'])
-
-        #     #crax.set_ylim([-calc.deg_to_rad(20.),calc.deg_to_rad(380.0)])
-        #         #crax.plot(0.22,mnvl_in_rad,'r<')
-        #     axvec[ind].set_xlim([0,1])
-        #     axvec[ind].set_ylim([0,1])
-        #     axvec[ind].get_xaxis().set_ticks([0,0.25,0.5,0.75,1])
-        #     axvec[ind].get_xaxis().set_ticklabels(['0','0.25','0.5','0.75','1'],fontsize=6)
-        #     axvec[ind].get_yaxis().set_ticks([0,0.5,1])
-        #     axvec[ind].get_yaxis().set_ticklabels(['0','0.5','1'],fontsize=6)
-        #     axvec[ind].set_xlabel('vector strength',fontsize=6)
-        #     axvec[ind].set_ylabel('probability',fontsize=6)
-        #     axvec[ind].set_aspect(1)
-
+        
 
     def make_hist_cumulative(self,ax,indt,horiz_pos,vert_pos,vert_offset,crcol,hst_bnds):
         nvl=len(indt)
@@ -879,20 +828,14 @@ class Example_Plot():
                 plt_vec=vec_strength[~np.isnan(vec_strength)]
                 if PLOT_MEAN_DISPLACEMENT:
                     od=self.summary_stats(mn_rad_no_offset[~np.isnan(mn_rad_no_offset)],plt_vec)
-                #twplt.scatter_polar(crax,plt_rad,plt_vec,withhold_direction_ticks=WITHHOLD_LEGEND_POLAR,plot_mean=PLOT_MEAN_DISPLACEMENT,sumstats=od)
                 if COMBINE_FIRST_AND_SECOND_DISPLACEMENT_FLAG:
-                    
-                        
-                    
+
                     if ind==0:
                         comb_pctiles=calc.resample_for_confidence_intervals(self.comb_head_dt[flytype],rows_flag=True)
                         twplt.scatter_polar(ax[flytype][3],np.reshape(cr_rad_comb,len(cr_rad_comb))+offset_angle,np.reshape(cr_vec_comb,len(cr_vec_comb)),withhold_direction_ticks=WITHHOLD_LEGEND_POLAR,plot_mean=PLOT_MEAN_DISPLACEMENT,sumstats=od)
                         ax[flytype][3].plot(np.linspace(comb_pctiles[0]+np.pi/2,comb_pctiles[2]+np.pi/2,100),.98*np.ones(100),'c',clip_on=False)
                         ax[flytype][3].plot([comb_pctiles[1]+np.pi/2,comb_pctiles[1]+np.pi/2],[0,1],'c')
-                    #if ind==1:
-                        #crind=self.ordered_fly_indices[flytype][1]
-                        
-                        #crax.plot(plt_rad[crind],0.9,'r<','MarkerSize',1)
+                  
                     crax.plot([0,np.pi],[VEC_STRENGTH_THRESH, VEC_STRENGTH_THRESH],'c')
                 if ind==2:
                     low_inds=np.where(np.array(cr_vec)<VEC_STRENGTH_THRESH)
@@ -910,11 +853,6 @@ class Example_Plot():
                
                 crax.text(3*np.pi/2,1.4,flytype,fontsize=8)
             
-
-                #    if plot_left_axis:
-                 #       crax.text(np.pi,1.7,text_key+'\nn='+str(len(plt_vec)),color=COLVLS[COLCT],fontsize=7)
-
-            #COLCT=COLCT+1
 
 
     def set_up_plot_ax(self,crflytype):
@@ -938,9 +876,6 @@ class Example_Plot():
                     print('text append error')
                 fpl.adjust_spines(ax['txt'][-1],['none'])
 
-                #hst_4_str='hst%s4'%(str(axrow))
-                #axtmp=self.layout[crflytype][LAYOUTIND].axes[hst_4_str]
-                #fpl.adjust_spines(axtmp,['none'])
             for crcol in np.arange(NHISTCOL):
 
                 crhststr='hst%s%s'%(str(axrow),str(crcol))
@@ -995,10 +930,6 @@ class Example_Plot():
                         plot_positions[key].append(plot_positions[key][0][-1]+tst[key])
                     else:
                         plot_positions[key].append(tst[key])
-
-
-
-
 
 
         polar_positions=calc.linear_to_polar(plot_positions)
