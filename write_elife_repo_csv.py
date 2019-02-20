@@ -1,7 +1,18 @@
-# fig4_paired
-#import fly_plot_lib
+#write_elife_repo_csv.py used to create the individual csv files in the Dryad Repository
+#for Sullivan, Warren, Doe 2019.
 
-#fly_plot_lib.set_params.pdf(params,presentation='paper')
+#Python 2.7
+
+#DEPENDENCIES
+#various libraries from https://github.com/timothylwarren/py_utilities
+
+##USAGE 
+#python write_elife_repo_csv.py
+
+##FLY_TYPE_TO_SAVE variable sets the data type for csv file
+
+
+
 import numpy as np
 import os
 import pylab
@@ -35,41 +46,24 @@ AXISPAD=2
 PLOT_POSTER=False
 DO_EXTRA_ANALYSIS=False
 PLOT_PAIRED_DIFF=True
-#ARCHIVE_BOUNDARY=pylab.date2num(datetime.datetime(2014,7,1))
 ADD_EXP_FIT=True
 
 FLY_TYPE_TO_SAVE=['es_uaskirj']
 IND_TYPE_TO_SAVE=['es_uaskirj']
 OFFSET_TO_SUBTRACT=[0]
-#[3*np.pi/2]
-#SAVE_NAME=['intensity_circular.csv']
 
 class Plot_Sum():
-    #def __init__ (self,**kwargs):
+    
+    def make_plots(self):
+        self.exec_file=os.path.abspath(__file__)
+        self.python_directory=os.path.split(self.exec_file)[0]
 
         
 
 
 
-
-    def make_plots(self):
-        self.exec_file=os.path.abspath(__file__)
-        self.python_directory=os.path.split(self.exec_file)[0]
-
-        #self.savepath=self.python_directory+save_fig_folder
-        #self.savepath=self.python_directory+save_fig_folder
-
-
-
         self.datapath=path['sum_data_path']+'summary_data/'
-        #self.heatdt=fh.open_pickle(self.datapath+self.heatdt_open_name)
-        #self.adt_open_name='adata.pck'
-        #savedt=fh.open_pickle(self.datapath+self.adt_open_name)
-
-        #self.adt=savedt['adt']
-        #self.vecdt=savedt['vecdt']
-
-        #self.vecout=savedt['vecout']
+        
         self.pck_open_name='vecstrength_unpaired_sumsundata.pck'
         self.datapath=path['input_data_path']+'summary_data/'
 
@@ -145,9 +139,6 @@ class Plot_Sum():
             #write a nan line after first flight bout of paired flight
             
 
-        #self.all_pairs={}
-        #self.get_all_pairs(self.vl_type,self.vl_ind)
-        #self.separate_uninterrupted_and_interrupted()
     def prepare_data_matrix(self,**kwargs):
         crind=kwargs['crind']
         ln=len(self.crdt[crind]['raw_time'])
