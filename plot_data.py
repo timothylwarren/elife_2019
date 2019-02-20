@@ -1,8 +1,11 @@
 #plot_data.py makes plots that comprise Figures 7, Figure 7 supplementary,
 #and Figure 8 supplementary of Sullivan, Warren, Doe 2019, submitted to Elife
 
-###USAGE 
+#USAGE 
 #python plot_data.py 
+
+#dependencies: figurefirst, 
+#            various libraries from https://github.com/timothylwarren/py_utilities
 
 ##FLY_TYPE_TO_PLOT sets which data will be plotted. Only one FLY_TYPE_TO_PLOT value
 #below should be uncommented. Other two commented out.
@@ -98,6 +101,7 @@ class Example_Plot():
         self.sumdt=fh.open_pickle(self.datapath+self.pck_open_name)['sumdt']
         
         self.adt=fh.open_pickle(self.datapath+self.pck_open_name)['adt']
+        pdb.set_trace()
 
 
 
@@ -253,8 +257,8 @@ class Example_Plot():
 
             vec_plot_list.append(vec_list[0][threshinds])
             vec_plot_list.append(vec_list[1][threshinds])
-            twplt.scatterplot(crax,rad_list[0][threshinds],rad_list[1][threshinds],plot_error_bar=True,dynamic_sizes=vec_plot_list,error_scale_factor=1)
-            twplt.scatterplot(crax,rad_list[0][threshinds],rad_list[1][threshinds]+2*np.pi,plot_error_bar=True,dynamic_sizes=vec_plot_list,error_scale_factor=1)
+            #twplt.scatterplot(crax,rad_list[0][threshinds],rad_list[1][threshinds],plot_error_bar=True,dynamic_sizes=vec_plot_list,error_scale_factor=1)
+            #twplt.scatterplot(crax,rad_list[0][threshinds],rad_list[1][threshinds]+2*np.pi,plot_error_bar=True,dynamic_sizes=vec_plot_list,error_scale_factor=1)
             if PERMUTE_FLAG:
                 for crtype in ['thresh','all']:
                     if crtype is 'thresh':

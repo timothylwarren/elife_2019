@@ -4,7 +4,9 @@
 #processed_analysis.py compiles processed data from different experiments,
 # groups the data by experiment type, and performs summary analyses
 
-###USAGE 
+#Python 2.7
+
+##USAGE 
 #python processed_analysis.py processed_date_range.txt
 
 ##A text file (e.g. 'processed_date_range.txt' specifies the dates, or range of dates,
@@ -42,10 +44,7 @@ input_data_path=base_path+'Dropbox/flystuff/uo_data/'
 sum_data_path=base_path+'Dropbox/flystuff/'
 
 
-EXP_KEYS=['gal_tnt_flies','lt-control_flies','rna_eyeless_flies','rna_control_flies','tb_flies','gal_tnt_inact_flies',
-'wedge096_kir_flies','wedge_kir_flies','split_vector_flies','ltnov_kir_flies','unclassified','kir_2192_flies','gal4ss90_uaskirj',
-'es_uaskirj','ss96_uaskirj','toyss96_rnai_flies','toyss96_29_rnai_flies','toyes_rnai_flies','es29_rnai_flies','hfskir_rnai_flies',
-'pfnkir_flies','r16d06_eyrnai_control_flies','3172_hfs_kir_flies','estoy_lc_flies','ss96toy_lc_flies','devtoy_lc_flies','ey_rnai_con_flies','eyrnai_exp_flies','mcherryhs_flies']
+EXP_KEYS=['es_uaskirj','ss96_uaskirj','rna_eyeless_flies','rna_control_flies','ss96toy_lc_flies','estoy_lc_flies','mcherryhs_flies','unclassified']
 SUMSTATS_KEYS_TO_REMOVE=['lftwng','gain_coefficient','raw_time','mot_position','pol_sensor','time_in_min','mot_deg','rtwng','mot_rad','normhst','mn_dot_product_lst','heat_map','heat_map_vls','mot_vel', 'xrad','vechst','mot_position_in_rad']
 SPLITSTATS_KEYS_TO_REMOVE=['realigned_norm_heat_map_vls','norm_heat_map_vls','r','mot_deg','theta','rtwng','mot_rad','vec_time_lst','len_vector_lst','mn_vector_lst','normhst','mn_dot_product_lst','heat_map','heat_map_vls','mot_vel','vechst','xrad']
 ADD_ALL_SEGMENTS=True
@@ -98,25 +97,16 @@ class Closed_Anal():
                 self.get_data_by_day()
 
             self.parse_summary_data()
-            #commented out to save space
-            #self.calculate_overall_average_values()
-            if HEAT_ANALYSIS:
-                self.heatdt={}
-                self.heat_analysis()
-                self.heatdt['average_heat_map'][self.crvl_type]=self.add_heat_map_value(self.heatdt['average_heat_map'][self.crvl_type],crheatmap,crflyind)
-
+            
             pckfname=sum_data_path+'summary_data/'+cr_savedata_str
 
-            #heat_pckfname=sum_data_path+'summary_data/'+heatdata_str
-
+\
             outdt['sumdt']=self.reduce_size(self.sumdt)
             outdt['adt']=self.adt
-            # outdt['exp_variances']=self.final_exp_var_values
-            # outdt['exp_fail_variances']=self.exp_var_failure_values
-            # figname='polanal'
+            
 
             fh.save_to_file(pckfname,outdt,save_executable=self.exec_file)
-            #fh.save_to_file(heat_pckfname,self.heatdt)
+            
 
     def initialize_sumdt_keys(self):
         for crkey in EXP_KEYS:
@@ -144,7 +134,8 @@ class Closed_Anal():
             for self.crflyname in dirlist:
 
                 self.get_data_by_fly()
-    #fore each fly append to self.sumdt
+    
+    #for each fly append to self.sumdt
 
     def reduce_size(self,sumdt):
 
@@ -164,10 +155,6 @@ class Closed_Anal():
                 for key in outdt[crflynum][crexpnum]['sumstats'].keys():
                     for crkey_to_remove in SUMSTATS_KEYS_TO_REMOVE:    
                         outdt[crflynum][crexpnum]['sumstats'][key][crkey_to_remove]=[]
-
-            
-
-
         return outdt
 
     def get_vec_dat(self,crdt):
@@ -182,12 +169,7 @@ class Closed_Anal():
         files = sorted(os.listdir(self.datapath+self.suffix))
         crdt={}
 
-
-
         pck_files = [f for f in files if f.find(self.cr_indata_str)>0]
-
-
-
 
 
         for self.crfile in pck_files:
@@ -324,7 +306,7 @@ class Closed_Anal():
 
         self.initialize_variables()
         self.flylist=[x for x in self.sumdt.keys() if type(x)  is int]
-        #self.make_control_distributions()
+        
         for self.crflynum in self.flylist:
 
             self.gal_tnt_ind=[]
@@ -346,73 +328,26 @@ class Closed_Anal():
             exp_type=self.crfly[0]['params']['fly_type']
         except:
             exp_type='unclassified'
-       
-        
-        if 'rna_control_flies' in exp_type:
-            cr_exp_type='rna_control_flies'
-
-        elif 'ss96es_rnai' in exp_type:
+  
+        if 'ss96es_rnai' in exp_type:
             cr_exp_type='toyes_rnai_flies'
-        elif 'es29_toyrnai' in exp_type:
-            cr_exp_type='es29_rnai_flies'
-        elif 'hfskir_rnai' in exp_type:
-            cr_exp_type='hfskir_rnai_flies'
+        
 
-        elif 'gal52_tnt' in exp_type:
-            cr_exp_type='gal_tnt_flies'
-        elif 'gal52b10_tnt_inactive' in exp_type:
-            cr_exp_type='gal_tnt_inact_flies'
-        elif 'tb' in exp_type:
-
-
-
-            cr_exp_type='tb_flies'
-
-        elif 'gal4ss90_uaskirj' in exp_type:
-            cr_exp_type='gal4ss90_uaskirj'
+        
         elif 'es_uaskirj' in exp_type:
             cr_exp_type='es_uaskirj'
         elif 'ss96_uaskirj' in exp_type:
             cr_exp_type='ss96_uaskirj'
-        elif 'r16b06_eyrnai_18' in exp_type:
-            cr_exp_type='r16d06_eyrnai_control_flies'
-        elif '3172_hfs_kir' in exp_type:
-            cr_exp_type='3172_hfs_kir_flies'
+       
 
         elif 'estoy_lc' in exp_type:
             cr_exp_type='estoy_lc_flies'
 
-        elif 'devtoy_lc' in exp_type:
-            cr_exp_type='devtoy_lc_flies'
-
-
         elif 'ss96toy_lc' in exp_type:
             cr_exp_type='ss96toy_lc_flies'
 
-        elif 'ss96toy_lc' in exp_type:
-            cr_exp_type='ss96toy_lc_flies'
+       
 
-        elif 'wedge_kir_flies' in exp_type:
-            cr_exp_type='wedge_kir_flies'
-
-        elif 'split_vector' in exp_type:
-            cr_exp_type='split_vector_flies'
-        elif '096' in exp_type:
-            cr_exp_type='wedge096_kir_flies'
-        elif 'lt-control' in exp_type:
-            cr_exp_type='lt-control_flies'
-        elif 'rna_eyeless_flies' in exp_type:
-            cr_exp_type='rna_eyeless_flies'
-        elif 'ltnov-kir' in exp_type:
-            cr_exp_type='ltnov_kir_flies'
-        elif 'toyss96_rnai_29' in exp_type:
-            cr_exp_type='toyss96_29_rnai_flies'
-        elif 'toyss96_rnai' in exp_type:
-            cr_exp_type='toyss96_rnai_flies'
-        elif 'kir_2192' in exp_type:
-            cr_exp_type='kir_2192_flies'
-        elif 'pfn_kir' in exp_type:
-            cr_exp_type='pfnkir_flies'
         elif 'eyrnai_con' in exp_type:
             cr_exp_type='ey_rnai_con_flies'
         elif 'mcherryhs' in exp_type:
@@ -428,8 +363,6 @@ class Closed_Anal():
         crvec_strength={}
         data_added_flag=False
         for stim_type in np.arange(NUM_DATA_TYPES):
-
-
             num_exps_added[stim_type]=0
             crheading[stim_type]=[]
             crvec_strength[stim_type]=[]
@@ -558,11 +491,9 @@ class Closed_Anal():
                         self.adt[cr_exp_type][crtype]['vec_strength'].append(crvec_strength[crtype])
                         self.adt[cr_exp_type][crtype]['flynum'].append(self.crflynum) 
               
-        #self.adt['total_sum_vec_strength_180'][crtype].append(self.adt['sum_data']['vec_strength_180'])
 
 if __name__ == '__main__':
     import sys
     print sys.argv[1]
     closed_anal=Closed_Anal(sys.argv)
     closed_anal.run_analysis()
-    #so far gain and heatmap
